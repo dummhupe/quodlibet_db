@@ -26,29 +26,30 @@ try:
     artist_id = 0
     album_id = 0
     for song in lib:
-        if song.has_key('artist') and not artists.has_key(song['artist']):
-            artist_id += 1
-            artists[song['artist']] = dict()
-            artists[song['artist']]['id'] = artist_id
-            artists[song['artist']]['artist'] = "'" + db.escape_string(song['artist']) + "'"
-            artists[song['artist']]['artistsort'] = "'" + db.escape_string(song.get('artistsort')) + "'" if song.has_key('artistsort') else "'" + db.escape_string(song['artist']) + "'"
-        if song.has_key('album') and not albums.has_key(song['album']):
-            album_id += 1
-            albums[song['album']] = dict()
-            albums[song['album']]['id'] = album_id
-            albums[song['album']]['album'] = "'" + db.escape_string(song['album']) + "'"
-            albums[song['album']]['albumsort'] = "'" + db.escape_string(song.get('albumsort')) + "'" if song.has_key('albumsort') else "'" + db.escape_string(song['album']) + "'"
-            albums[song['album']]['date'] = "'" + db.escape_string(song.get('date')) + "'" if song.has_key('date') else "NULL"
-            albums[song['album']]['genre'] = "'" + db.escape_string(song.get('genre')) + "'" if song.has_key('genre') else "NULL"
-            albums[song['album']]['artist_id'] = artists[song['artist']]['id'] if song.has_key('artist') else "NULL"
-            
-        item = dict()
-        item['title'] = "'" + db.escape_string(song['title']) + "'" if song.has_key('title') else "NULL"
-        item['tracknumber'] = "'" + db.escape_string(song.get('tracknumber')) + "'" if song.has_key('tracknumber') else "NULL"
-        item['length'] = song['~#length']
-        item['filename'] = "'" + db.escape_string(song['~filename']) + "'"
-        item['album_id'] = albums[song['album']]['id'] if song.has_key('album') else "NULL"
-        songs.append(item)
+        if not song.has_key('~#rating') or song.get('~#rating') > 0:
+            if song.has_key('artist') and not artists.has_key(song['artist']):
+                artist_id += 1
+                artists[song['artist']] = dict()
+                artists[song['artist']]['id'] = artist_id
+                artists[song['artist']]['artist'] = "'" + db.escape_string(song['artist']) + "'"
+                artists[song['artist']]['artistsort'] = "'" + db.escape_string(song.get('artistsort')) + "'" if song.has_key('artistsort') else "'" + db.escape_string(song['artist']) + "'"
+            if song.has_key('album') and not albums.has_key(song['album']):
+                album_id += 1
+                albums[song['album']] = dict()
+                albums[song['album']]['id'] = album_id
+                albums[song['album']]['album'] = "'" + db.escape_string(song['album']) + "'"
+                albums[song['album']]['albumsort'] = "'" + db.escape_string(song.get('albumsort')) + "'" if song.has_key('albumsort') else "'" + db.escape_string(song['album']) + "'"
+                albums[song['album']]['date'] = "'" + db.escape_string(song.get('date')) + "'" if song.has_key('date') else "NULL"
+                albums[song['album']]['genre'] = "'" + db.escape_string(song.get('genre')) + "'" if song.has_key('genre') else "NULL"
+                albums[song['album']]['artist_id'] = artists[song['artist']]['id'] if song.has_key('artist') else "NULL"
+                
+            item = dict()
+            item['title'] = "'" + db.escape_string(song['title']) + "'" if song.has_key('title') else "NULL"
+            item['tracknumber'] = "'" + db.escape_string(song.get('tracknumber')) + "'" if song.has_key('tracknumber') else "NULL"
+            item['length'] = song['~#length']
+            item['filename'] = "'" + db.escape_string(song['~filename']) + "'"
+            item['album_id'] = albums[song['album']]['id'] if song.has_key('album') else "NULL"
+            songs.append(item)
 
     for artist in artists:
         stmt = "INSERT INTO artists(id,artist,artistsort,created_at,updated_at) VALUES({0},{1},{2},NOW(),NOW())".format(artists[artist]['id'], artists[artist]['artist'], artists[artist]['artistsort'])

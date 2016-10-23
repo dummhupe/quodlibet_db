@@ -1,12 +1,14 @@
 #!/usr/bin/env python2
 
-username = ""
-password = ""
+username = "root"
 database = "quodlibet"
-quodlibet = ".quodlibet/songs"
+quodlibet = "/home/koenig/.quodlibet/songs"
 
 import pickle
 lib = pickle.load(open(quodlibet, "rb"))
+
+import sys
+password = sys.argv[1]
 
 import MySQLdb as mdb
 import sys
@@ -29,19 +31,19 @@ try:
             artists[song['artist']] = dict()
             artists[song['artist']]['id'] = artist_id
             artists[song['artist']]['artist'] = "'" + db.escape_string(song['artist']) + "'"
-            artists[song['artist']]['artistsort'] = "'" + db.escape_string(song.get('artistsort')) + "'" if song.has_key('artistsort') else "NULL"
+            artists[song['artist']]['artistsort'] = "'" + db.escape_string(song.get('artistsort')) + "'" if song.has_key('artistsort') else "'" + db.escape_string(song['artist']) + "'"
         if song.has_key('album') and not albums.has_key(song['album']):
             album_id += 1
             albums[song['album']] = dict()
             albums[song['album']]['id'] = album_id
             albums[song['album']]['album'] = "'" + db.escape_string(song['album']) + "'"
-            albums[song['album']]['albumsort'] = "'" + db.escape_string(song.get('albumsort')) + "'" if song.has_key('albumsort') else "NULL"
+            albums[song['album']]['albumsort'] = "'" + db.escape_string(song.get('albumsort')) + "'" if song.has_key('albumsort') else "'" + db.escape_string(song['album']) + "'"
             albums[song['album']]['date'] = "'" + db.escape_string(song.get('date')) + "'" if song.has_key('date') else "NULL"
             albums[song['album']]['genre'] = "'" + db.escape_string(song.get('genre')) + "'" if song.has_key('genre') else "NULL"
             albums[song['album']]['artist_id'] = artists[song['artist']]['id'] if song.has_key('artist') else "NULL"
             
         item = dict()
-        item['title'] = "'" + db.escape_string(song['title']) + "'"
+        item['title'] = "'" + db.escape_string(song['title']) + "'" if song.has_key('title') else "NULL"
         item['tracknumber'] = "'" + db.escape_string(song.get('tracknumber')) + "'" if song.has_key('tracknumber') else "NULL"
         item['length'] = song['~#length']
         item['filename'] = "'" + db.escape_string(song['~filename']) + "'"
